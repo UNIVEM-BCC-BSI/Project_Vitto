@@ -4,17 +4,33 @@ from settings import *
 
 pygame.init()
 
-
 class Main():
     def __init__(self):
         self.background = bg_tela_inicial
         self.screen = pygame.display.set_mode(size)
+        pygame.display.set_caption("Project Vitto")
         self.play_button = play_inativo
-        self.vidas = 0
         self.dificuldade = None
         self.bg = None
         self.perguntas = None
         self.pergunta_atual = 0
+        self.estado = None
+        self.final = None
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.05)
+    
+    def resultado_da_interacao(self, perguntas, vida_max):
+        if perguntas[self.pergunta_atual].checa_interacoes() != None:
+            if perguntas[self.pergunta_atual].checa_interacoes() == None: 
+                self.pergunta_atual += 1
+        if self.pergunta_atual == len(perguntas) or len(vidas) == 0:
+            if len(vidas) == 0:
+                self.final = 0
+            elif len(vidas) < vida_max:
+                self.final = 1
+            elif len(vidas) == vida_max:
+                self.final = 2
+            self.estado = 'final'
 
     def event_loop(self):
         espaco_livre = True
@@ -43,33 +59,34 @@ class Main():
                 if easy_button.text_rect.collidepoint(mouse_position):
                     easy_button.text_surf = (fonte_dificuldades.render(easy_button.text, False, 'white'))
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                        self.vidas = 10
                         self.dificuldade = 'easy'
                         self.bg = bg_perguntas_easy
                         self.perguntas = perguntas_easy
                         self.background = intro_1
+                        coracoes(10)
+                        
                 else:
                     easy_button.text_surf = fonte_dificuldades.render(easy_button.text, False, easy_button.color)
 
                 if medium_button.text_rect.collidepoint(mouse_position):
                     medium_button.text_surf = (fonte_dificuldades.render(medium_button.text, False, 'white'))
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                        self.vidas = 8
                         self.dificuldade = 'medium'
                         self.bg = bg_perguntas_medium
                         self.perguntas = perguntas_medium
                         self.background = intro_1
+                        coracoes(8)
                 else:
                     medium_button.text_surf = fonte_dificuldades.render(medium_button.text, False, medium_button.color)
 
                 if hard_button.text_rect.collidepoint(mouse_position):
                     hard_button.text_surf = (fonte_dificuldades.render(hard_button.text, False, 'white'))
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                        self.vidas = 5
                         self.dificuldade = 'hard'
                         self.bg = bg_perguntas_hard
                         self.perguntas = perguntas_hard
                         self.background = intro_1
+                        coracoes(5)
                 else:
                     hard_button.text_surf = fonte_dificuldades.render(hard_button.text, False, hard_button.color)
 
@@ -99,25 +116,23 @@ class Main():
                     espaco_livre = True
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and espaco_livre:
                     self.background = self.bg[self.pergunta_atual]
+                    self.estado = 'jogando'
 
             # INTERACOES COM ALTERNATIVAS
+            if self.estado == 'jogando':
+                if self.dificuldade == 'easy' and self.background == self.bg[self.pergunta_atual]:
+                    self.resultado_da_interacao(perguntas_easy, 10) 
 
-            if self.dificuldade == 'easy':
-                if self.pergunta_atual == 0:
-                    perguntas_easy[0].checa_interacoes()
-                elif self.pergunta_atual == 1:
-                    perguntas_easy[1].checa_interacoes()
+                elif self.dificuldade == 'medium' and self.background == self.bg[self.pergunta_atual]:
+                    self.resultado_da_interacao(perguntas_medium, 8)
 
-            elif self.dificuldade == 'medium':
-                if self.pergunta_atual == 0:
-                    perguntas_medium[0].checa_interacoes()
-
-            elif self.dificuldade == 'hard':
-                if self.pergunta_atual == 0:
-                    perguntas_hard[0].checa_interacoes()
+                elif self.dificuldade == 'hard' and self.background == self.bg[self.pergunta_atual]:
+                    self.resultado_da_interacao(perguntas_hard, 5)
 
     def show_screen(self):
-        self.screen.blit(video_reproduzivel(self.background), (0, 0))
+        if self.estado != 'final':
+            self.screen.blit(video_reproduzivel(self.background), (0, 0))
+        
 
         if self.background == bg_tela_inicial:
             self.screen.blit(self.play_button, play_button_rect)
@@ -138,67 +153,28 @@ class Main():
         elif self.background == intro_4:
             self.screen.blit(press_space, press_space_rect)
 
-        if self.dificuldade == 'easy':
-            if self.background == bg_pergunta_1:
-                if self.pergunta_atual == 0:
-                    # CORACAO & RELOGIO
-                    self.screen.blit(relogio, (20, 15))
-                    #tela.blit(teste, (80, 27))
 
-                    self.screen.blit(coracao, (1035, 650))
-                    self.screen.blit(coracao, (990, 650))
-                    self.screen.blit(coracao, (945, 650))
-                    self.screen.blit(coracao, (900, 650))
-                    self.screen.blit(coracao, (855, 650))
+        if self.estado == 'jogando':
 
-                    perguntas_easy[0].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_2:
-                if self.pergunta_atual == 1:
-                    perguntas_easy[1].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_3:
-                if self.pergunta_atual == 2:
-                    perguntas_easy[2].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_4:
-                if self.pergunta_atual == 3:
-                    perguntas_easy[3].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_5:
-                if self.pergunta_atual == 4:
-                    perguntas_easy[4].mostra_alternativas(self.screen)
+            if self.dificuldade == 'easy':
+                vidas_group.draw(self.screen)
+                self.background = bg_perguntas_easy[self.pergunta_atual]
+                perguntas_easy[self.pergunta_atual].mostra_alternativas(self.screen)
+                 
 
-        if self.dificuldade == 'medium':
-            if self.background == bg_pergunta_6:
-                if self.pergunta_atual == 0:
-                    perguntas_medium[0].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_7:
-                if self.pergunta_atual == 1:
-                    perguntas_medium[1].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_8:
-                if self.pergunta_atual == 2:
-                    perguntas_medium[2].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_9:
-                if self.pergunta_atual == 3:
-                    perguntas_medium[3].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_10:
-                if self.pergunta_atual == 4:
-                    perguntas_medium[4].mostra_alternativas(self.screen)
+            elif self.dificuldade == 'medium':
+                vidas_group.draw(self.screen)
+                self.background = bg_perguntas_medium[self.pergunta_atual]
+                perguntas_medium[self.pergunta_atual].mostra_alternativas(self.screen)
 
-        if self.dificuldade == 'hard':
-            if self.background == bg_pergunta_11:
-                if self.pergunta_atual == 0:
-                    perguntas_hard[0].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_12:
-                if self.pergunta_atual == 1:
-                    perguntas_hard[1].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_13:
-                if self.pergunta_atual == 2:
-                    perguntas_hard[2].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_14:
-                if self.pergunta_atual == 3:
-                    perguntas_hard[3].mostra_alternativas(self.screen)
-            elif self.background == bg_pergunta_15:
-                if self.pergunta_atual == 4:
-                    perguntas_hard[4].mostra_alternativas(self.screen)
-
+            elif self.dificuldade == 'hard':
+                vidas_group.draw(self.screen)
+                self.background = bg_perguntas_hard[self.pergunta_atual]
+                perguntas_hard[self.pergunta_atual].mostra_alternativas(self.screen)
+        
+        if self.estado == 'final':
+            self.background = tela_final[self.final]
+            self.screen.blit(self.background, (0, 0))
 
     def run(self):
         self.event_loop()
@@ -210,5 +186,6 @@ clock = pygame.time.Clock()
 while True:
 
     main.run()
+    
     pygame.display.update()
     clock.tick(FPS)

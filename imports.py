@@ -15,6 +15,24 @@ fonte_titulos = pygame.font.Font('fonts/half_bold_pixel_7/half_bold_pixel-7.ttf'
 fonte_alternativas = pygame.font.Font('fonts/half_bold_pixel_7/half_bold_pixel-7.ttf', 20)
 
 
+# SONS
+
+playback = pygame.mixer.music.load('sons/playback.mpeg')
+
+alternativa = pygame.mixer.Sound('sons/alternativas.mpeg')
+alternativa.set_volume(0.1)
+acertou = pygame.mixer.Sound('sons/acertou.mpeg')
+acertou.set_volume(0.1)
+errou = pygame.mixer.Sound('sons/errou.mpeg')
+errou.set_volume(0.1)
+botoes = pygame.mixer.Sound('sons/botoes.mpeg')
+botoes.set_volume(0.1)
+morreu = pygame.mixer.Sound('sons/morreu.mpeg')
+morreu.set_volume(0.1)
+narracao = pygame.mixer.Sound('sons/narracao.mpeg')
+narracao.set_volume(0.1)
+
+
 # IMPORTS
 
 def ajusta_video(file):
@@ -35,10 +53,18 @@ def video_reproduzivel(file):
 
 bg_tela_inicial = ajusta_video('bg_tela_inicial')
 bg_tela_dificuldades = ajusta_video('bg_tela_dificuldades')
+
 intro_1 = ajusta_video('intro_1')
 intro_2 = ajusta_video('intro_2')
 intro_3 = ajusta_video('intro_3')
 intro_4 = ajusta_video('intro_4')
+
+intros = [intro_1, intro_2, intro_3, intro_4]
+
+tela_feliz = pygame.image.load('images/tela_feliz.png')
+tela_mal = pygame.image.load('images/tela_mal.png') 
+tela_morre = pygame.image.load('images/tela_morre.png') 
+tela_final = [tela_morre, tela_mal, tela_feliz]
 
 # BOTOES
 
@@ -82,6 +108,26 @@ bg_perguntas_easy = [bg_pergunta_1, bg_pergunta_2, bg_pergunta_3, bg_pergunta_4,
 bg_perguntas_medium = [bg_pergunta_6, bg_pergunta_7, bg_pergunta_8, bg_pergunta_9, bg_pergunta_10, bg_pergunta_11]
 
 bg_perguntas_hard = [bg_pergunta_12, bg_pergunta_13, bg_pergunta_14, bg_pergunta_15, bg_pergunta_16, bg_pergunta_17, bg_pergunta_18, bg_pergunta_19, bg_pergunta_20]
+
+class Vida(pygame.sprite.Sprite):
+    def __init__(self, imagem, pos_x, pos_y):
+        super().__init__()
+        self.image = imagem
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [pos_x, pos_y]
+
+
+vidas = []
+vidas_group = pygame.sprite.Group()
+
+def coracoes(dificuldade):
+    first = 1035
+    for i in range(dificuldade):
+        vidas.append(Vida(coracao, first - 45*i, 16))
+    vidas_group.add(vidas)
+        
+
+
 
 
 class BotaoDificuldade(pygame.sprite.Sprite):
@@ -145,8 +191,10 @@ class Pergunta:
         self.alternativas_surface = [self.alternativa_a_surface, self.alternativa_b_surface, self.alternativa_c_surface, self.alternativa_d_surface]
 
         self.alternativa_correta = alternativa_correta
-        self.clicked = True
-        self.acertou = False
+        self.pressionado = False
+        self.acertou = None
+        self.hover = False
+        self.ultimo_hover = False
 
     def mostra_alternativas(self, tela):
         tela.blit(self.alternativa_a_surface, self.alternativa_a_rect)
@@ -157,28 +205,87 @@ class Pergunta:
     def checa_interacoes(self):
         mouse_position = pygame.mouse.get_pos()
         if self.alternativa_a_rect.collidepoint(mouse_position):
+            # if self.hover == False:
+            #     alternativa.play()
+            #     self.hover = True
             self.alternativa_a_surface = fonte_alternativas.render(self.alternativa_a, False, AZUL)
+
+            if pygame.mouse.get_pressed()[0]:
+                self.pressionado = True
+            else:
+                if self.pressionado:
+                    self.pressionado = False
+                    if self.alternativa_correta == 'A':
+                        return 0
+                    else:
+                        if len(vidas) > 0:
+                            vidas[len(vidas)-1].kill()
+                            vidas.pop()
         else:
-            self.alternativa_a_surface = fonte_alternativas.render(
-                self.alternativa_a, False, self.cor)
+            self.alternativa_a_surface = fonte_alternativas.render(self.alternativa_a, False, self.cor)
+            # if self.hover == True:
+            #     self.hover = False
 
         if self.alternativa_b_rect.collidepoint(mouse_position):
             self.alternativa_b_surface = fonte_alternativas.render(self.alternativa_b, False, AZUL)
+            if pygame.mouse.get_pressed()[0]:
+                self.pressionado = True
+            else:
+                if self.pressionado:
+                    self.pressionado = False
+                    if self.alternativa_correta == 'B':
+                        return 0
+                    else:
+                        if len(vidas) > 0:
+                            vidas[len(vidas)-1].kill()
+                            vidas.pop()
         else:
             self.alternativa_b_surface = fonte_alternativas.render(
                 self.alternativa_b, False, self.cor)
 
         if self.alternativa_c_rect.collidepoint(mouse_position):
             self.alternativa_c_surface = fonte_alternativas.render(self.alternativa_c, False, AZUL)
+            if pygame.mouse.get_pressed()[0]:
+                self.pressionado = True
+            else:
+                if self.pressionado:
+                    self.pressionado = False
+                    if self.alternativa_correta == 'C':
+                        return 0
+                    else:
+                       if len(vidas) > 0:
+                            vidas[len(vidas)-1].kill()
+                            vidas.pop()
         else:
             self.alternativa_c_surface = fonte_alternativas.render(
                 self.alternativa_c, False, self.cor)
 
         if self.alternativa_d_rect.collidepoint(mouse_position):
             self.alternativa_d_surface = fonte_alternativas.render(self.alternativa_d, False, AZUL)
+            if pygame.mouse.get_pressed()[0]:
+                self.pressionado = True
+            else:
+                if self.pressionado:
+                    self.pressionado = False
+                    if self.alternativa_correta == 'D':
+                        return 0
+                    else:
+                        if len(vidas) > 0:
+                            vidas[len(vidas)-1].kill()
+                            vidas.pop()
         else:
             self.alternativa_d_surface = fonte_alternativas.render(
                 self.alternativa_d, False, self.cor)
+        
+        if self.alternativa_a_rect.collidepoint(mouse_position) or self.alternativa_b_rect.collidepoint(mouse_position) or self.alternativa_c_rect.collidepoint(mouse_position) or self.alternativa_d_rect.collidepoint(mouse_position):
+            if self.hover == False:
+                alternativa.play()
+                self.hover = True
+        else:
+            if self.hover == True:
+                self.hover = False
+
+        
 
 pergunta1 = Pergunta('(A) Horse',
                      '(B) Mustang',
@@ -186,93 +293,89 @@ pergunta1 = Pergunta('(A) Horse',
                      '(D) Yegua',
                      'A',
                      BRANCO)
-
 pergunta2 = Pergunta("(A) Stone",
                      "(B) Hermes",
                      "(C) Snake",
                      "(D) Medusa",
                      'C',
                     BRANCO)
-
 pergunta3 = Pergunta(
-                             "(A) Birds fly west and horses run east",
-                             "(B) The birds fly for west and horses run fo the east",
-                             "(C) Birds fly oest and horses run lest",
-                             "(D) Birds fly to west so the horses run to east",
-                             "A",
-                             BRANCO)
+                     "(A) Birds fly west and horses run east",
+                     "(B) The birds fly for west and horses run fo the east",
+                     "(C) Birds fly oest and horses run lest",
+                     "(D) Birds fly to west so the horses run to east",
+                     "A",
+                     BRANCO)
 pergunta4 = Pergunta(
-                           "(A) She is beautiful",
-                           "(B) He are handsome",
-                           "(C) She to are amazing",
-                           "(D) We to be crazy",
-                           'A',
-                           BRANCO)
+                     "(A) She is beautiful",
+                     "(B) He are handsome",
+                     "(C) She to are amazing",
+                     "(D) We to be crazy",
+                     'A',
+                     BRANCO)
 pergunta5 = Pergunta(
-                           "(A) Books, are, is",
-                           "(B) Teaches, is are",
-                           "(C) Runs, is, is",
-                           "(D) Draws, are, are",
-                           'B',
-                           BRANCO)
+                     "(A) Books, are, is",
+                     "(B) Teaches, is are",
+                     "(C) Runs, is, is",
+                     "(D) Draws, are, are",
+                     'B',
+                     BRANCO)
 pergunta6 = Pergunta(
-                          "(A) Drive, of",
-                          "(B) Take, of",
-                          "(C) Drive, from",
-                          "(D) See, about",
-                          'D',
-                          BRANCO)
+                    "(A) Drive, of",
+                    "(B) Take, of",
+                    "(C) Drive, from",
+                    "(D) See, about",
+                    'C',
+                    BRANCO)
 pergunta7 = Pergunta(
-                           "(A) Does, does",
-                           "(B) Do, does",
-                           "(C) Does, do",
-                           "(D) Do, do",
-                           'B',
-                           BRANCO)
+                    "(A) Does, does",
+                    "(B) Do, does",
+                    "(C) Does, do",
+                    "(D) Do, do",
+                    'B',
+                    BRANCO)
 pergunta8 = Pergunta(
-                           "(A) I don't think so",
-                           "(B) He's not being good",
-                           "(C) No, I am not",
-                           "(D) I have been good!",
-                           'D',
-                           BRANCO)
+                    "(A) I don't think so",
+                    "(B) He's not being good",
+                    "(C) No, I am not",
+                    "(D) I have been good!",
+                    'D',
+                    BRANCO)
 pergunta9 = Pergunta(
-                         "(A) Beak",
-                         "(B) Snake",
-                         "(C) Whale",
-                         "(D) Wolf",
-                         'C',
-                         BRANCO)
+                    "(A) Beak",
+                    "(B) Snake",
+                    "(C) Whale",
+                    "(D) Wolf",
+                    'D',
+                    BRANCO)
 pergunta10 = Pergunta(
-                           "(A) Though",
-                           "(B) Those",
-                           "(C) Thers",
-                           "(D) Thei",
-                           'A',
-                           BRANCO)
-
+                    "(A) Though",
+                    "(B) Those",
+                    "(C) Thers",
+                    "(D) Thei",
+                    'B',
+                    BRANCO)
 pergunta11 = Pergunta(
-                                "(A) Thair",
-                                "(B) This",
-                                "(C) Those",
-                                "(D) That",
-                                'C',
-                                BRANCO)
+                    "(A) Thair",
+                    "(B) This",
+                    "(C) Those",
+                    "(D) That",
+                    'C',
+                    BRANCO)
 pergunta12 = Pergunta(
-                              "(A) Pineapple, pumpkin, avocado, banana",
-                              "(B) Apple, orange, lemon, apple",
-                              "(C) Pumpkin, khaki, lemon, apple",
-                              "(D) Apple, orange, guava, papaya",
-                              'B',
-                              BRANCO)
+                    "(A) Pineapple, pumpkin, avocado, banana",
+                    "(B) Apple, orange, lemon, apple",
+                    "(C) Pumpkin, khaki, lemon, apple",
+                    "(D) Apple, orange, guava, papaya",
+                    'B',
+                    BRANCO)
 pergunta13 = Pergunta(
-                            "(A) Three o'clock",
-                            "(B) One o'clock",
-                            "(C) Six o'clock",
-                            "(D) Eight o'clock",
-                            'D',
-                            BRANCO)
-
+                    "(A) Three o'clock",
+                    "(B) One o'clock",
+                    "(C) Six o'clock",
+                    "(D) Eight o'clock",
+                    'D',
+                    BRANCO)
 pergunta14 = Pergunta(
                             "(A) Two",
                             "(B) Seven",
@@ -280,7 +383,6 @@ pergunta14 = Pergunta(
                             "(D) Ten",
                             'C',
                             BRANCO)
-
 pergunta15 = Pergunta(
                             "(A) Thirteen",
                             "(B) Thirty",
@@ -288,7 +390,6 @@ pergunta15 = Pergunta(
                             "(D) Three Ten",
                             'A',
                             BRANCO)
-
 pergunta16 = Pergunta(
                             "(A)  Book, clock, door, shoe",
                             "(B) Book, time, door, shirt",
@@ -296,7 +397,6 @@ pergunta16 = Pergunta(
                             "(D) Shoe, shirt, book, door",
                             'A',
                             BRANCO)
-
 pergunta17 = Pergunta(
                             "(A) Yellow",
                             "(B) Blue",
@@ -304,7 +404,6 @@ pergunta17 = Pergunta(
                             "(D) Red",
                             'D',
                             BRANCO)
-
 pergunta18 = Pergunta(
                             "(A) White",
                             "(B) Green",
@@ -312,7 +411,6 @@ pergunta18 = Pergunta(
                             "(D) Red",
                             'B',
                             BRANCO)
-
 pergunta19 = Pergunta(
                             "(A) Purple - Yellow",
                             "(B) Blue - Green",
@@ -320,7 +418,6 @@ pergunta19 = Pergunta(
                             "(D) Black - Orange",
                             'C',
                             BRANCO)
-
 pergunta20 = Pergunta(
                             "(A) Yellow - Black",
                             "(B) Orange - Green",
@@ -329,10 +426,10 @@ pergunta20 = Pergunta(
                             'C',
                             BRANCO)
 
-perguntas_easy = [pergunta1, pergunta2, pergunta3, pergunta4, pergunta5]
-perguntas_medium = [pergunta6, pergunta7, pergunta8, pergunta9, pergunta10]
-perguntas_hard = [pergunta11, pergunta12, pergunta13, pergunta14, pergunta15]
+perguntas_easy = [pergunta1, pergunta2, pergunta3, pergunta4, pergunta5, pergunta6, pergunta7, pergunta8, pergunta9, pergunta10]
+perguntas_medium = [pergunta11, pergunta12, pergunta13, pergunta14, pergunta15, pergunta16, pergunta17, pergunta18]
+perguntas_hard = [pergunta19, pergunta20]
 
-bg_perguntas_easy = [bg_pergunta_1, bg_pergunta_2, bg_pergunta_3, bg_pergunta_4, bg_pergunta_5]
-bg_perguntas_medium = [bg_pergunta_6, bg_pergunta_7, bg_pergunta_8, bg_pergunta_9, bg_pergunta_10]
-bg_perguntas_hard = [bg_pergunta_11, bg_pergunta_12, bg_pergunta_13, bg_pergunta_14, bg_pergunta_15]
+bg_perguntas_easy = [bg_pergunta_1, bg_pergunta_2, bg_pergunta_3, bg_pergunta_4, bg_pergunta_5, bg_pergunta_6, bg_pergunta_7, bg_pergunta_8, bg_pergunta_9, bg_pergunta_10]
+bg_perguntas_medium = [bg_pergunta_11, bg_pergunta_12, bg_pergunta_13, bg_pergunta_14, bg_pergunta_15, bg_pergunta_16, bg_pergunta_17, bg_pergunta_18]
+bg_perguntas_hard = [bg_pergunta_19, bg_pergunta_20]
