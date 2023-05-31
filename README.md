@@ -14,5 +14,10 @@
 
 ## Pequena Demo
 
-https://user-images.githubusercontent.com/110543447/234098331-d645f9f0-2f67-452b-b4c5-440731e899af.mp4
+https://github.com/UNIVEM-BCC-BSI/Project_Vitto/assets/110543447/85e7f0f6-8290-4092-b1c9-46bf11e1fc66
 
+## Como rodar na sua máquina
+
+- Clone o repositório
+- Abra o arquivo "main" no seu editor de código
+- Clique em 'run'
