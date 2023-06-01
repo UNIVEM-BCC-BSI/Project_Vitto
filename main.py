@@ -1,6 +1,7 @@
 import pygame
 from imports import *
 from settings import *
+from dicas import *
 
 pygame.init()
 
@@ -25,10 +26,13 @@ class Main():
                 self.pergunta_atual += 1
         if self.pergunta_atual == len(perguntas) or len(vidas) == 0:
             if len(vidas) == 0:
+                morreu.play()
                 self.final = 0
             elif len(vidas) < vida_max:
+                ganhou.play()
                 self.final = 1
             elif len(vidas) == vida_max:
+                ganhou.play()
                 self.final = 2
             self.estado = 'final'
 
@@ -153,24 +157,27 @@ class Main():
         elif self.background == intro_4:
             self.screen.blit(press_space, press_space_rect)
 
-
         if self.estado == 'jogando':
-
             if self.dificuldade == 'easy':
                 vidas_group.draw(self.screen)
                 self.background = bg_perguntas_easy[self.pergunta_atual]
                 perguntas_easy[self.pergunta_atual].mostra_alternativas(self.screen)
-                 
+                dicas_group.draw(self.screen)  
+                dicas_group.update()
 
             elif self.dificuldade == 'medium':
                 vidas_group.draw(self.screen)
                 self.background = bg_perguntas_medium[self.pergunta_atual]
                 perguntas_medium[self.pergunta_atual].mostra_alternativas(self.screen)
+                dicas_group.draw(self.screen)  
+                dicas_group.update()
 
             elif self.dificuldade == 'hard':
                 vidas_group.draw(self.screen)
                 self.background = bg_perguntas_hard[self.pergunta_atual]
                 perguntas_hard[self.pergunta_atual].mostra_alternativas(self.screen)
+                dicas_group.draw(self.screen)  
+                dicas_group.update()
         
         if self.estado == 'final':
             self.background = tela_final[self.final]
@@ -179,7 +186,6 @@ class Main():
     def run(self):
         self.event_loop()
         self.show_screen()
-
 
 main = Main()
 clock = pygame.time.Clock()

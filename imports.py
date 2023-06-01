@@ -1,7 +1,6 @@
 import pygame
 from moviepy.editor import VideoFileClip
 from moviepy.video.fx import all as vfx
-from pygame import Surface, SurfaceType
 
 AZUL = (62, 114, 188)
 BRANCO = (255, 255, 255)
@@ -25,12 +24,14 @@ acertou = pygame.mixer.Sound('sons/acertou.mpeg')
 acertou.set_volume(0.1)
 errou = pygame.mixer.Sound('sons/errou.mpeg')
 errou.set_volume(0.1)
-botoes = pygame.mixer.Sound('sons/botoes.mpeg')
-botoes.set_volume(0.1)
+clique = pygame.mixer.Sound('sons/clique.MP3')
+clique.set_volume(0.1)
 morreu = pygame.mixer.Sound('sons/morreu.mpeg')
 morreu.set_volume(0.1)
 narracao = pygame.mixer.Sound('sons/narracao.mpeg')
 narracao.set_volume(0.1)
+ganhou = pygame.mixer.Sound('sons/ganhou.mpeg')
+ganhou.set_volume(0.1)
 
 
 # IMPORTS
@@ -205,9 +206,7 @@ class Pergunta:
     def checa_interacoes(self):
         mouse_position = pygame.mouse.get_pos()
         if self.alternativa_a_rect.collidepoint(mouse_position):
-            # if self.hover == False:
-            #     alternativa.play()
-            #     self.hover = True
+            
             self.alternativa_a_surface = fonte_alternativas.render(self.alternativa_a, False, AZUL)
 
             if pygame.mouse.get_pressed()[0]:
@@ -216,16 +215,16 @@ class Pergunta:
                 if self.pressionado:
                     self.pressionado = False
                     if self.alternativa_correta == 'A':
+                        acertou.play()
                         return 0
                     else:
+                        errou.play()
                         if len(vidas) > 0:
                             vidas[len(vidas)-1].kill()
                             vidas.pop()
         else:
             self.alternativa_a_surface = fonte_alternativas.render(self.alternativa_a, False, self.cor)
-            # if self.hover == True:
-            #     self.hover = False
-
+            
         if self.alternativa_b_rect.collidepoint(mouse_position):
             self.alternativa_b_surface = fonte_alternativas.render(self.alternativa_b, False, AZUL)
             if pygame.mouse.get_pressed()[0]:
@@ -234,8 +233,10 @@ class Pergunta:
                 if self.pressionado:
                     self.pressionado = False
                     if self.alternativa_correta == 'B':
+                        acertou.play()
                         return 0
                     else:
+                        errou.play()
                         if len(vidas) > 0:
                             vidas[len(vidas)-1].kill()
                             vidas.pop()
@@ -251,9 +252,11 @@ class Pergunta:
                 if self.pressionado:
                     self.pressionado = False
                     if self.alternativa_correta == 'C':
+                        acertou.play()
                         return 0
                     else:
-                       if len(vidas) > 0:
+                        errou.play()
+                        if len(vidas) > 0:
                             vidas[len(vidas)-1].kill()
                             vidas.pop()
         else:
@@ -268,8 +271,10 @@ class Pergunta:
                 if self.pressionado:
                     self.pressionado = False
                     if self.alternativa_correta == 'D':
+                        acertou.play()
                         return 0
                     else:
+                        errou.play()
                         if len(vidas) > 0:
                             vidas[len(vidas)-1].kill()
                             vidas.pop()
@@ -433,3 +438,7 @@ perguntas_hard = [pergunta19, pergunta20]
 bg_perguntas_easy = [bg_pergunta_1, bg_pergunta_2, bg_pergunta_3, bg_pergunta_4, bg_pergunta_5, bg_pergunta_6, bg_pergunta_7, bg_pergunta_8, bg_pergunta_9, bg_pergunta_10]
 bg_perguntas_medium = [bg_pergunta_11, bg_pergunta_12, bg_pergunta_13, bg_pergunta_14, bg_pergunta_15, bg_pergunta_16, bg_pergunta_17, bg_pergunta_18]
 bg_perguntas_hard = [bg_pergunta_19, bg_pergunta_20]
+
+dicas_easy = []
+dicas_medium = []
+dicas_hard = []
