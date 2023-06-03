@@ -3,6 +3,7 @@ from imports import *
 from settings import *
 from dicas import *
 
+
 pygame.init()
 
 class Main():
@@ -16,13 +17,17 @@ class Main():
         self.perguntas = None
         self.pergunta_atual = 0
         self.estado = None
-        self.final = None
+        self.final = 0
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.05)
     
+    
+
     def resultado_da_interacao(self, perguntas, vida_max):
         if perguntas[self.pergunta_atual].checa_interacoes() != None:
-            if perguntas[self.pergunta_atual].checa_interacoes() == None: 
+            if perguntas[self.pergunta_atual].checa_interacoes() == None:
+                dicas[self.pergunta_atual].image = dicas[self.pergunta_atual].botao
+                muda_dica(self.pergunta_atual)
                 self.pergunta_atual += 1
         if self.pergunta_atual == len(perguntas) or len(vidas) == 0:
             if len(vidas) == 0:
@@ -46,12 +51,12 @@ class Main():
             # INTERAÇÃO COM O BOTÃO PLAY
 
             if self.background == bg_tela_inicial:
-
                 if play_button_rect.collidepoint(mouse_position):
                     self.play_button = play_ativo
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                         self.background = bg_tela_dificuldades
+                        som_clique()
                 else:
                     self.play_button = play_inativo
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -59,10 +64,11 @@ class Main():
             # SELECIONAR DIFICULDADE
 
             if self.background == bg_tela_dificuldades:
-
+                
                 if easy_button.text_rect.collidepoint(mouse_position):
                     easy_button.text_surf = (fonte_dificuldades.render(easy_button.text, False, 'white'))
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                        som_clique()
                         self.dificuldade = 'easy'
                         self.bg = bg_perguntas_easy
                         self.perguntas = perguntas_easy
@@ -75,6 +81,7 @@ class Main():
                 if medium_button.text_rect.collidepoint(mouse_position):
                     medium_button.text_surf = (fonte_dificuldades.render(medium_button.text, False, 'white'))
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                        som_clique()
                         self.dificuldade = 'medium'
                         self.bg = bg_perguntas_medium
                         self.perguntas = perguntas_medium
@@ -86,6 +93,7 @@ class Main():
                 if hard_button.text_rect.collidepoint(mouse_position):
                     hard_button.text_surf = (fonte_dificuldades.render(hard_button.text, False, 'white'))
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                        som_clique()
                         self.dificuldade = 'hard'
                         self.bg = bg_perguntas_hard
                         self.perguntas = perguntas_hard
@@ -121,6 +129,19 @@ class Main():
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and espaco_livre:
                     self.background = self.bg[self.pergunta_atual]
                     self.estado = 'jogando'
+                
+            if self.background == tela_final[self.final]:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and espaco_livre:
+                    espaco_livre = False
+                    self.background = bg_tela_inicial
+                    self.estado = None
+                    self.play_button = play_inativo
+                    self.dificuldade = None
+                    self.bg = None
+                    self.perguntas = None
+                    self.pergunta_atual = 0
+                    self.estado = None
+                    self.final = 0
 
             # INTERACOES COM ALTERNATIVAS
             if self.estado == 'jogando':
@@ -136,7 +157,7 @@ class Main():
     def show_screen(self):
         if self.estado != 'final':
             self.screen.blit(video_reproduzivel(self.background), (0, 0))
-        
+
 
         if self.background == bg_tela_inicial:
             self.screen.blit(self.play_button, play_button_rect)
@@ -178,10 +199,12 @@ class Main():
                 perguntas_hard[self.pergunta_atual].mostra_alternativas(self.screen)
                 dicas_group.draw(self.screen)  
                 dicas_group.update()
-        
+
         if self.estado == 'final':
             self.background = tela_final[self.final]
             self.screen.blit(self.background, (0, 0))
+            self.screen.blit(press_space_to_main, press_space_rect)
+
 
     def run(self):
         self.event_loop()

@@ -16,6 +16,7 @@ fonte_alternativas = pygame.font.Font('fonts/half_bold_pixel_7/half_bold_pixel-7
 
 # SONS
 
+
 playback = pygame.mixer.music.load('sons/playback.mpeg')
 
 alternativa = pygame.mixer.Sound('sons/alternativas.mpeg')
@@ -33,7 +34,11 @@ narracao.set_volume(0.1)
 ganhou = pygame.mixer.Sound('sons/ganhou.mpeg')
 ganhou.set_volume(0.1)
 
-
+def som_clique():
+        clicou = False
+        if not clicou:
+            clique.play()
+            clicou = True
 # IMPORTS
 
 def ajusta_video(file):
@@ -104,12 +109,6 @@ bg_pergunta_19 = ajusta_video('pergunta_19')
 bg_pergunta_20 = ajusta_video('pergunta_20')
 
 
-bg_perguntas_easy = [bg_pergunta_1, bg_pergunta_2, bg_pergunta_3, bg_pergunta_4, bg_pergunta_5]
-
-bg_perguntas_medium = [bg_pergunta_6, bg_pergunta_7, bg_pergunta_8, bg_pergunta_9, bg_pergunta_10, bg_pergunta_11]
-
-bg_perguntas_hard = [bg_pergunta_12, bg_pergunta_13, bg_pergunta_14, bg_pergunta_15, bg_pergunta_16, bg_pergunta_17, bg_pergunta_18, bg_pergunta_19, bg_pergunta_20]
-
 class Vida(pygame.sprite.Sprite):
     def __init__(self, imagem, pos_x, pos_y):
         super().__init__()
@@ -127,9 +126,6 @@ def coracoes(dificuldade):
         vidas.append(Vida(coracao, first - 45*i, 16))
     vidas_group.add(vidas)
         
-
-
-
 
 class BotaoDificuldade(pygame.sprite.Sprite):
     def __init__(self, texto, x, y):
@@ -154,6 +150,9 @@ hard_button = BotaoDificuldade('Hard', 685, 353)
 
 press_space = fonte_titulos.render('(press space to continue)', False, 'white')
 press_space_rect = press_space.get_rect(center=(540, 670))
+
+press_space_to_main = fonte_titulos.render('(press space to return no main menu)', False, 'white')
+press_space_to_main_rect = press_space_to_main.get_rect(center=(540, 670))
 
 # PERGUNTAS
 
@@ -319,12 +318,12 @@ pergunta4 = Pergunta(
                      'A',
                      BRANCO)
 pergunta5 = Pergunta(
-                     "(A) Books, are, is",
-                     "(B) Teaches, is are",
-                     "(C) Runs, is, is",
-                     "(D) Draws, are, are",
-                     'B',
-                     BRANCO)
+                    "(A) Books, are, is",
+                    "(B) Teaches, is are",
+                    "(C) Runs, is, is",
+                    "(D) Draws, are, are",
+                    'B',
+                    BRANCO)
 pergunta6 = Pergunta(
                     "(A) Drive, of",
                     "(B) Take, of",
@@ -382,54 +381,54 @@ pergunta13 = Pergunta(
                     'D',
                     BRANCO)
 pergunta14 = Pergunta(
-                            "(A) Two",
-                            "(B) Seven",
-                            "(C) Five",
-                            "(D) Ten",
-                            'C',
-                            BRANCO)
+                    "(A) Two",
+                    "(B) Seven",
+                    "(C) Five",
+                    "(D) Ten",
+                    'C',
+                    BRANCO)
 pergunta15 = Pergunta(
-                            "(A) Thirteen",
-                            "(B) Thirty",
-                            "(C) Ten Three",
-                            "(D) Three Ten",
-                            'A',
-                            BRANCO)
+                    "(A) Thirteen",
+                    "(B) Thirty",
+                    "(C) Ten Three",
+                    "(D) Three Ten",
+                    'A',
+                    BRANCO)
 pergunta16 = Pergunta(
-                            "(A)  Book, clock, door, shoe",
-                            "(B) Book, time, door, shirt",
-                            "(C) Shoe, door, clock, book",
-                            "(D) Shoe, shirt, book, door",
-                            'A',
-                            BRANCO)
+                    "(A)  Book, clock, door, shoe",
+                    "(B) Book, time, door, shirt",
+                    "(C) Shoe, door, clock, book",
+                    "(D) Shoe, shirt, book, door",
+                    'A',
+                    BRANCO)
 pergunta17 = Pergunta(
-                            "(A) Yellow",
-                            "(B) Blue",
-                            "(C) Purple",
-                            "(D) Red",
-                            'D',
-                            BRANCO)
+                    "(A) Yellow",
+                    "(B) Blue",
+                    "(C) Purple",
+                    "(D) Red",
+                    'D',
+                    BRANCO)
 pergunta18 = Pergunta(
-                            "(A) White",
-                            "(B) Green",
-                            "(C) Purple",
-                            "(D) Red",
-                            'B',
-                            BRANCO)
+                    "(A) White",
+                    "(B) Green",
+                    "(C) Purple",
+                    "(D) Red",
+                    'B',
+                    BRANCO)
 pergunta19 = Pergunta(
-                            "(A) Purple - Yellow",
-                            "(B) Blue - Green",
-                            "(C) Yellow - Purple",
-                            "(D) Black - Orange",
-                            'C',
-                            BRANCO)
+                    "(A) Purple - Yellow",
+                    "(B) Blue - Green",
+                    "(C) Yellow - Purple",
+                    "(D) Black - Orange",
+                    'C',
+                    BRANCO)
 pergunta20 = Pergunta(
-                            "(A) Yellow - Black",
-                            "(B) Orange - Green",
-                            "(C) Black - Red",
-                            "(D) Black - Purple",
-                            'C',
-                            BRANCO)
+                    "(A) Yellow - Black",
+                    "(B) Orange - Green",
+                    "(C) Black - Red",
+                    "(D) Black - Purple",
+                    'C',
+                    BRANCO)
 
 perguntas_easy = [pergunta1, pergunta2, pergunta3, pergunta4, pergunta5, pergunta6, pergunta7, pergunta8, pergunta9, pergunta10]
 perguntas_medium = [pergunta11, pergunta12, pergunta13, pergunta14, pergunta15, pergunta16, pergunta17, pergunta18]
