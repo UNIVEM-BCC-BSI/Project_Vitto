@@ -1,7 +1,6 @@
 import pygame
 from imports import *
 from settings import *
-from dicas import *
 
 
 pygame.init()
@@ -15,31 +14,46 @@ class Main():
         self.dificuldade = None
         self.bg = None
         self.perguntas = None
+        self.dicas = None
+        self.dicas_group = pygame.sprite.Group()
         self.pergunta_atual = 0
         self.estado = None
         self.final = 0
+
+        self.tempo_inicial = 0
+        self.tempo_atual = 0
+
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.05)
     
     
 
-    def resultado_da_interacao(self, perguntas, vida_max):
+    def resultado_da_interacao(self, perguntas, vida_max, dicas):
         if perguntas[self.pergunta_atual].checa_interacoes() != None:
+            dicas[self.pergunta_atual].image = dicas[self.pergunta_atual].botao
+            if self.pergunta_atual < len(perguntas)-1:
+                self.dicas_group.remove(dicas[self.pergunta_atual])
+                self.dicas_group.add(dicas[self.pergunta_atual+1])
             if perguntas[self.pergunta_atual].checa_interacoes() == None:
-                dicas[self.pergunta_atual].image = dicas[self.pergunta_atual].botao
-                muda_dica(self.pergunta_atual)
+                self.tempo_inicial = pygame.time.get_ticks()
                 self.pergunta_atual += 1
         if self.pergunta_atual == len(perguntas) or len(vidas) == 0:
             if len(vidas) == 0:
                 morreu.play()
                 self.final = 0
-            elif len(vidas) < vida_max:
+            elif 0 < len(vidas) < vida_max:
                 ganhou.play()
                 self.final = 1
             elif len(vidas) == vida_max:
                 ganhou.play()
                 self.final = 2
             self.estado = 'final'
+            self.dificuldade = None
+            self.perguntas = None
+            self.dicas = None
+            self.dicas_group = pygame.sprite.Group()
+            self.pergunta_atual = 0
+            self.vidas_group = pygame.sprite.Group()
 
     def event_loop(self):
         espaco_livre = True
@@ -72,6 +86,8 @@ class Main():
                         self.dificuldade = 'easy'
                         self.bg = bg_perguntas_easy
                         self.perguntas = perguntas_easy
+                        self.dicas = dicas_easy
+                        self.dicas_group.add(self.dicas[0])
                         self.background = intro_1
                         coracoes(10)
                         
@@ -85,6 +101,8 @@ class Main():
                         self.dificuldade = 'medium'
                         self.bg = bg_perguntas_medium
                         self.perguntas = perguntas_medium
+                        self.dicas = dicas_medium
+                        self.dicas_group.add(self.dicas[0])
                         self.background = intro_1
                         coracoes(8)
                 else:
@@ -97,6 +115,8 @@ class Main():
                         self.dificuldade = 'hard'
                         self.bg = bg_perguntas_hard
                         self.perguntas = perguntas_hard
+                        self.dicas = dicas_hard
+                        self.dicas_group.add(self.dicas[0])
                         self.background = intro_1
                         coracoes(5)
                 else:
@@ -141,18 +161,17 @@ class Main():
                     self.perguntas = None
                     self.pergunta_atual = 0
                     self.estado = None
-                    self.final = 0
 
             # INTERACOES COM ALTERNATIVAS
             if self.estado == 'jogando':
                 if self.dificuldade == 'easy' and self.background == self.bg[self.pergunta_atual]:
-                    self.resultado_da_interacao(perguntas_easy, 10) 
+                    self.resultado_da_interacao(perguntas_easy, 10, self.dicas)
 
                 elif self.dificuldade == 'medium' and self.background == self.bg[self.pergunta_atual]:
-                    self.resultado_da_interacao(perguntas_medium, 8)
+                    self.resultado_da_interacao(perguntas_medium, 8, self.dicas)
 
                 elif self.dificuldade == 'hard' and self.background == self.bg[self.pergunta_atual]:
-                    self.resultado_da_interacao(perguntas_hard, 5)
+                    self.resultado_da_interacao(perguntas_hard, 5, self.dicas)
 
     def show_screen(self):
         if self.estado != 'final':
@@ -179,31 +198,39 @@ class Main():
             self.screen.blit(press_space, press_space_rect)
 
         if self.estado == 'jogando':
+
+            self.tempo_atual = (pygame.time.get_ticks())
+            tempo = (self.tempo_atual-self.tempo_inicial)//1000
+
+
             if self.dificuldade == 'easy':
                 vidas_group.draw(self.screen)
                 self.background = bg_perguntas_easy[self.pergunta_atual]
                 perguntas_easy[self.pergunta_atual].mostra_alternativas(self.screen)
-                dicas_group.draw(self.screen)  
-                dicas_group.update()
+                if tempo > 7:
+                    self.dicas_group.draw(self.screen)  
+                    self.dicas_group.update()
 
             elif self.dificuldade == 'medium':
                 vidas_group.draw(self.screen)
                 self.background = bg_perguntas_medium[self.pergunta_atual]
                 perguntas_medium[self.pergunta_atual].mostra_alternativas(self.screen)
-                dicas_group.draw(self.screen)  
-                dicas_group.update()
+                if tempo > 7:
+                    self.dicas_group.draw(self.screen)  
+                    self.dicas_group.update()
 
             elif self.dificuldade == 'hard':
                 vidas_group.draw(self.screen)
                 self.background = bg_perguntas_hard[self.pergunta_atual]
                 perguntas_hard[self.pergunta_atual].mostra_alternativas(self.screen)
-                dicas_group.draw(self.screen)  
-                dicas_group.update()
+                if tempo > 7:
+                    self.dicas_group.draw(self.screen)  
+                    self.dicas_group.update()
 
         if self.estado == 'final':
             self.background = tela_final[self.final]
             self.screen.blit(self.background, (0, 0))
-            self.screen.blit(press_space_to_main, press_space_rect)
+            self.screen.blit(press_space_to_main, press_space_to_main_rect)
 
 
     def run(self):
