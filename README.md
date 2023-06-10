@@ -13,10 +13,14 @@
 
 ## Pequena Demo
 
-https://github.com/UNIVEM-BCC-BSI/Project_Vitto/assets/110543447/85e7f0f6-8290-4092-b1c9-46bf11e1fc66
+https://github.com/UNIVEM-BCC-BSI/Project_Vitto/assets/110543447/cb42279b-5a85-4432-9396-d8035bd6aa64
 
 ## Como rodar na sua máquina
 
 - Clone o repositório
 - Abra o arquivo "main" no seu editor de código
 - Clique em 'run'
+
+
+
+
