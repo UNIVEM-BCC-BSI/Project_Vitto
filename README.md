@@ -1,6 +1,6 @@
 # Project_Vitto
 
-> status: Em desenvolvimento
+> status: Finalizado
 
 ## Integrantes
 
@@ -21,6 +21,4 @@ https://github.com/UNIVEM-BCC-BSI/Project_Vitto/assets/110543447/cb42279b-5a85-4
 - Abra o arquivo "main" no seu editor de código
 - Clique em 'run'
 
-
-
-
+Ou baixe a pasta "dist" e abra o arquivo executável :wink:
