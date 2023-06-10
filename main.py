@@ -10,7 +10,9 @@ class Main():
         self.background = bg_tela_inicial
         self.screen = pygame.display.set_mode(size)
         pygame.display.set_caption("Project Vitto")
+        pygame.display.set_icon(icone)
         self.play_button = play_inativo
+        self.exit_button = exit_inativo
         self.dificuldade = None
         self.bg = None
         self.perguntas = None
@@ -65,15 +67,29 @@ class Main():
             # INTERAÇÃO COM O BOTÃO PLAY
 
             if self.background == bg_tela_inicial:
-                if play_button_rect.collidepoint(mouse_position):
-                    self.play_button = play_ativo
+                if play_button_rect.collidepoint(mouse_position) or exit_rect.collidepoint(mouse_position):
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                    if play_button_rect.collidepoint(mouse_position):
+                        self.play_button = play_ativo
+                    elif exit_rect.collidepoint(mouse_position):
+                        self.exit_button = exit_ativo
+                else:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                    self.play_button = play_inativo
+                    self.exit_button = exit_inativo
+
+                if play_button_rect.collidepoint(mouse_position):
                     if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                         self.background = bg_tela_dificuldades
                         som_clique()
-                else:
-                    self.play_button = play_inativo
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                elif exit_rect.collidepoint(mouse_position):
+                    if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                        self.background = bg_tela_dificuldades
+                        som_clique()
+                        exit()
+                # else:
+                #     self.play_button = play_inativo
+                #     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
             # SELECIONAR DIFICULDADE
 
@@ -180,6 +196,8 @@ class Main():
 
         if self.background == bg_tela_inicial:
             self.screen.blit(self.play_button, play_button_rect)
+            self.screen.blit(self.exit_button, exit_rect)
+
 
         if self.background == bg_tela_dificuldades:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)

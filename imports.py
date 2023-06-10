@@ -5,6 +5,8 @@ from moviepy.video.fx import all as vfx
 AZUL = (62, 114, 188)
 BRANCO = (255, 255, 255)
 
+icone = pygame.image.load('images/icone.png')
+
 # FONTS
 
 fonte_intro_creditos = pygame.font.Font('fonts/half_bold_pixel_7/half_bold_pixel-7.ttf', 16)
@@ -74,11 +76,18 @@ tela_final = [tela_morre, tela_mal, tela_feliz]
 
 # BOTOES
 
-play_button_rect = pygame.Rect(379, 480, 312, 135)
+play_button_rect = pygame.Rect(226, 489, 312, 135)
 play_inativo = pygame.image.load('images/play_inativo.png')
 play_inativo = pygame.transform.scale(play_inativo, (312, 135))
 play_ativo = pygame.image.load('images/play_ativo.png')
 play_ativo = pygame.transform.scale(play_ativo, (312, 135))
+
+exit_rect = pygame.Rect(607, 489, 312, 135)
+exit_inativo = pygame.image.load('images/exit_inactive.png')
+exit_inativo = pygame.transform.scale(exit_inativo, (312, 135))
+exit_ativo = pygame.image.load('images/exit_active.png')
+exit_ativo = pygame.transform.scale(exit_ativo, (312, 135))
+
 
 # COMPLEMENTO DAS PERGUNTAS
 
